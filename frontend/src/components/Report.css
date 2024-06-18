@@ -1,0 +1,34 @@
+.reports-container {
+    margin-top: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .reports-title {
+    font-weight: bold;
+    margin-bottom: 30px;
+  }
+  
+  .reports-content {
+    width: 100%;
+  }
+  
+  .chart-container {
+    width: 100%;
+    max-width: 500px;
+    margin: auto;
+  }
+  
+  .report-button {
+    margin-top: 10px;
+    width: 200px;
+  }
+  
+  .filter-container {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    width: 100%;
+  }
+  
