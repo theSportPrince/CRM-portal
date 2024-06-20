@@ -9,6 +9,8 @@ router.put('/update/:leadId', isAuthenticated, leadController.updateLead);
 router.get('/',leadController.getAllLeads);
 router.post('/bulk', isAuthenticated,isAdminOrManager,leadController.addLeadsBulk);
 router.get("/won",isAuthenticated,leadController.findwonleadofuser);
+router.delete('/delete/:leadId', isAuthenticated,isAdminOrManager, leadController.deleteLead);
+
 
 // Define other routes similarly
 

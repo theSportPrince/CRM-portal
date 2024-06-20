@@ -1,13 +1,13 @@
 const Lead = require("../Model/Lead");
 
 exports.addLead = async (req, res) => {
-  const { name, email, phone, service, price, status, source, assignedTo,createdBy} = req.body;
+  const { name, email, phone, service, price, status, source, assignedTo,createdBy,followup} = req.body;
  
   if(!name||!email||!phone||!service){
     res.status(500).json("Required field are missing");
   }
   try {
-    const newLead = new Lead({ name, email, phone, service, price, status, source, createdBy, assignedTo });
+    const newLead = new Lead({ name, email, phone, service, price, status, source, createdBy, assignedTo,followup });
     await newLead.save();
     res.status(201).json(newLead);
   } catch (error) {
@@ -17,7 +17,7 @@ exports.addLead = async (req, res) => {
 
 exports.updateLead = async (req, res) => {
   const { leadId } = req.params; // Get leadId from route parameters
-  const { name, email, phone, service, price, status, assignedTo } = req.body;
+  const { name, email, phone, service, price, status, assignedTo,followup } = req.body;
   const { role } = req.user; 
 
   try {
@@ -32,6 +32,7 @@ exports.updateLead = async (req, res) => {
       lead.phone = phone;
       lead.service = service;
       lead.price = price;
+      lead.followup = followup;
     } else if (role === 'admin' || role === 'manager') {
       // Admin or manager can update all lead fields
       lead.name = name;
@@ -40,6 +41,7 @@ exports.updateLead = async (req, res) => {
       lead.service = service;
       lead.price = price;
       lead.status = status;
+      lead.followup = followup;
       lead.assignedTo = assignedTo;
     }
 
@@ -61,7 +63,6 @@ exports.getAllLeads = async (req, res) => {
 };
 
 exports.addLeadsBulk = async (req, res) => {
-  console.log("--------------",req.body);
   const { leads, createdBy } = req.body;
   if (!leads || !createdBy) {
     return res.status(400).json({ message: "Required fields are missing" });
@@ -70,6 +71,7 @@ exports.addLeadsBulk = async (req, res) => {
     const newLeads = leads.map(lead => ({
       ...lead,
       createdBy,
+      followup: lead.followup || "N/A",
       assignedTo: lead.assignedTo || null,
     }));
     await Lead.insertMany(newLeads);
@@ -89,3 +91,16 @@ exports.findwonleadofuser=async(req,res)=>{
     res.status(500).json({ message: error.message });
   }
 }
+
+
+exports.deleteLead = async (req, res) => {
+  const { leadId } = req.params;
+  try {
+    const lead = await Lead.findByIdAndDelete(leadId);
+    if (!lead) return res.status(404).json({ message: 'Lead not found' });
+
+    res.status(200).json({ message: 'Lead deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

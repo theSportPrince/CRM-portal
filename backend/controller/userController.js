@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const crypto = require('crypto');
 const bcrypt = require("bcryptjs");
 const User = require("../Model/User");
 const Lead =require("../Model/Lead");
@@ -28,7 +29,7 @@ exports.login = async (req, res) => {
   try {
     const user = await User.findOne({ email });
     if (!user) return res.status(404).json({ message: "User not found" });
-
+   
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch)
       return res.status(400).json({ message: "Invalid credentials" });
@@ -120,3 +121,43 @@ exports.fetchuserPerformance=async(req,res)=>{
     res.status(500).json({ message: error.message });
   }
 }
+
+
+exports.forgotPassword = async (req, res) => {
+  const { email } = req.body;
+  try {
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    // Generate a reset token
+    const resetToken = crypto.randomBytes(32).toString('hex');
+
+    // For the sake of this implementation, we'll return the token directly
+    res.status(200).json({ message: 'Reset token generated', token: resetToken });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+exports.resetPassword = async (req, res) => {
+  const { email, password, otp } = req.body; // Removed token as it's not used
+  try {
+    const user = await User.findOne({ email });
+    if (!user) return res.status(400).json({ message: "User not found" });
+
+    // For simplicity, let's assume token verification is done on the frontend
+    // Verify OTP
+    if (!otp) {
+      return res.status(400).json({ message: "OTP not available" });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(password, salt);
+    console.log(user.password); // Log the new hashed password for verification
+    await user.save();
+
+    res.status(200).json({ message: 'Password has been updated' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

@@ -8,6 +8,7 @@ const leadSchema = new mongoose.Schema({
   price: { type: Number },
   status: { type: String, enum: ['new', 'contacted', 'qualified', 'lost', 'won'], default: 'new' },
   source: { type: String },
+  followup: { type: String }, 
   assignedTo: { type: String },
   createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
 }, { timestamps: true });

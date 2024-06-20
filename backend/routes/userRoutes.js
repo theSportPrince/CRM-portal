@@ -11,6 +11,7 @@ router.get('/getonlyuser', isAuthenticated, isAdminOrManager, userController.get
 router.get('/getalluser', isAuthenticated, isAdminOrManager, userController.getUsers);
 router.put('/update/:id', isAuthenticated, isAdminOrManager, userController.updateUser);
 router.get('/performance',isAuthenticated,userController.fetchuserPerformance);
-
+router.post('/forgot-password', userController.forgotPassword);
+router.post('/reset-password', userController.resetPassword);
 
 module.exports = router;
